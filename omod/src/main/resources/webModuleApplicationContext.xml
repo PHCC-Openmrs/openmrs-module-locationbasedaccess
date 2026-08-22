@@ -4,9 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<!-- Add here beans related to the web context -->
-	<bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
-		<property name="moduleId" value="${project.parent.artifactId}"/>
-	</bean>
-		
+	<!--
+		The StandardModuleUiConfiguration bean that used to live here registered this module's
+		OWA/uiframework fragments (see the module-level comment in config.xml for why those are
+		unused in this deployment) - removed since org.openmrs.ui.framework isn't on the classpath
+		without the uiframework module installed, and would otherwise fail this whole context.
+	-->
+
 </beans>

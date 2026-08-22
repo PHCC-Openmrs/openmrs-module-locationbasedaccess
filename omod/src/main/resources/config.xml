@@ -17,11 +17,26 @@
 
 	
 	<!-- Required Modules -->
+	<!--
+		uiframework/appui are intentionally NOT required here: this build only uses this
+		module's AOP interceptors (location-based data restriction) and its own legacyui
+		integration (see the <extension> below), not its original OWA/uiframework "Manage
+		Account" fragments, which are unused in an O3-based distro and would otherwise force
+		installing two more legacy modules just to satisfy an unused UI path.
+	-->
 	<require_modules>
-		<require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
-		<require_module version="${appuiVersion}">org.openmrs.module.appui</require_module>
+		<require_module version="2.2.0">org.openmrs.module.webservices.rest</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
+
+	<aware_of_modules>
+		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
+	</aware_of_modules>
+
+	<extension>
+		<point>org.openmrs.userForm.custom.extension</point>
+		<class>org.openmrs.module.locationbasedaccess.extension.html.UserFormLocationExtension</class>
+	</extension>
 	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.LocationBasedAccessActivator</activator>
