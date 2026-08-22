@@ -53,7 +53,7 @@ public class UserFormLocationExtension extends Extension {
 		        .append(Context.getMessageSourceService().getMessage("locationbasedaccess.location"))
 		        .append("</td>");
 		html.append("<td valign=\"top\">");
-		html.append("<input type=\"hidden\" name=\"property\" value=\"")
+		html.append("<input type=\"hidden\" id=\"lbacLocationPropertyName\" name=\"property\" value=\"")
 		        .append(LocationBasedAccessConstants.LOCATION_USER_PROPERTY_NAME).append("\"/>");
 		html.append("<input type=\"hidden\" id=\"lbacLocationValue\" name=\"value\" value=\"")
 		        .append(escapeHtml(join(selectedUuids))).append("\"/>");
@@ -74,6 +74,35 @@ public class UserFormLocationExtension extends Extension {
 		        .append("    document.getElementById('lbacLocationValue').value = checked.join(',');").append("  }")
 		        .append("  var boxes = document.getElementsByClassName('lbacLocationCheckbox');")
 		        .append("  for (var i = 0; i < boxes.length; i++) { boxes[i].onchange = lbacUpdateLocationValue; }")
+		        .append("  function lbacDisableDuplicateLocationPropertyRow() {")
+		        .append("    // Once this user has a locationUuid property, legacyui's own generic")
+		        .append("    // \"User Properties\" editor (further down this same form, in the collapsed")
+		        .append("    // Advanced Options section) renders ANOTHER property/value row for it - a")
+		        .append("    // stale plain-text box that isn't wired to these checkboxes at all. Disabled")
+		        .append("    // inputs are excluded from form submission, so disabling that row's inputs")
+		        .append("    // (everywhere except our own, identified by id) prevents it from silently")
+		        .append("    // overwriting whatever these checkboxes submit - UserFormController applies")
+		        .append("    // every submitted property/value pair in order, so a stale duplicate would")
+		        .append("    // otherwise win just by being rendered later in the page.")
+		        .append("    var propertyInputs = document.getElementsByName('property');")
+		        .append("    for (var i = 0; i < propertyInputs.length; i++) {")
+		        .append("      var input = propertyInputs[i];")
+		        .append("      if (input.id !== 'lbacLocationPropertyName' && input.value === '")
+		        .append(LocationBasedAccessConstants.LOCATION_USER_PROPERTY_NAME).append("') {")
+		        .append("        input.disabled = true;")
+		        .append("        var row = input.closest ? input.closest('tr') : null;")
+		        .append("        if (row) {")
+		        .append("          var valueInput = row.querySelector('input[name=\"value\"], textarea[name=\"value\"]');")
+		        .append("          if (valueInput) { valueInput.disabled = true; }")
+		        .append("        }")
+		        .append("      }")
+		        .append("    }")
+		        .append("  }")
+		        .append("  if (document.readyState === 'complete') {")
+		        .append("    lbacDisableDuplicateLocationPropertyRow();")
+		        .append("  } else {")
+		        .append("    window.addEventListener('load', lbacDisableDuplicateLocationPropertyRow);")
+		        .append("  }")
 		        .append("})();").append("</script>");
 
 		html.append("</td>");
