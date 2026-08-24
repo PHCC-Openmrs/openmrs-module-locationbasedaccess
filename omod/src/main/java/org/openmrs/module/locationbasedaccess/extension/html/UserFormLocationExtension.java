@@ -103,6 +103,15 @@ public class UserFormLocationExtension extends Extension {
 		        .append("  } else {")
 		        .append("    window.addEventListener('load', lbacDisableDuplicateLocationPropertyRow);")
 		        .append("  }")
+		        .append("  // Belt and braces: the 'load' listener above has been observed to not fire in")
+		        .append("  // at least one real browser (form still submitted the stale duplicate despite")
+		        .append("  // disabling working correctly when invoked manually from the console). Hooking")
+		        .append("  // the form's submit event guarantees this runs right before the data that")
+		        .append("  // actually matters is sent, regardless of whether 'load' ever fires.")
+		        .append("  var thisForm = document.getElementById('thisUserForm');")
+		        .append("  if (thisForm) {")
+		        .append("    thisForm.addEventListener('submit', lbacDisableDuplicateLocationPropertyRow);")
+		        .append("  }")
 		        .append("})();").append("</script>");
 
 		html.append("</td>");
