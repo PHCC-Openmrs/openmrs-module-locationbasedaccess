@@ -67,52 +67,59 @@ public class UserFormLocationExtension extends Extension {
 			        .append(escapeHtml(location.getName())).append("</label></div>");
 		}
 
-		html.append("<script type=\"text/javascript\">").append("(function() {")
-		        .append("  function lbacUpdateLocationValue() {").append("    var checked = [];")
-		        .append("    var boxes = document.getElementsByClassName('lbacLocationCheckbox');")
-		        .append("    for (var i = 0; i < boxes.length; i++) { if (boxes[i].checked) { checked.push(boxes[i].value); } }")
-		        .append("    document.getElementById('lbacLocationValue').value = checked.join(',');").append("  }")
-		        .append("  var boxes = document.getElementsByClassName('lbacLocationCheckbox');")
-		        .append("  for (var i = 0; i < boxes.length; i++) { boxes[i].onchange = lbacUpdateLocationValue; }")
-		        .append("  function lbacDisableDuplicateLocationPropertyRow() {")
-		        .append("    // Once this user has a locationUuid property, legacyui's own generic")
-		        .append("    // \"User Properties\" editor (further down this same form, in the collapsed")
-		        .append("    // Advanced Options section) renders ANOTHER property/value row for it - a")
-		        .append("    // stale plain-text box that isn't wired to these checkboxes at all. Disabled")
-		        .append("    // inputs are excluded from form submission, so disabling that row's inputs")
-		        .append("    // (everywhere except our own, identified by id) prevents it from silently")
-		        .append("    // overwriting whatever these checkboxes submit - UserFormController applies")
-		        .append("    // every submitted property/value pair in order, so a stale duplicate would")
-		        .append("    // otherwise win just by being rendered later in the page.")
-		        .append("    var propertyInputs = document.getElementsByName('property');")
-		        .append("    for (var i = 0; i < propertyInputs.length; i++) {")
-		        .append("      var input = propertyInputs[i];")
-		        .append("      if (input.id !== 'lbacLocationPropertyName' && input.value === '")
-		        .append(LocationBasedAccessConstants.LOCATION_USER_PROPERTY_NAME).append("') {")
-		        .append("        input.disabled = true;")
-		        .append("        var row = input.closest ? input.closest('tr') : null;")
-		        .append("        if (row) {")
-		        .append("          var valueInput = row.querySelector('input[name=\"value\"], textarea[name=\"value\"]');")
-		        .append("          if (valueInput) { valueInput.disabled = true; }")
-		        .append("        }")
-		        .append("      }")
-		        .append("    }")
-		        .append("  }")
-		        .append("  if (document.readyState === 'complete') {")
-		        .append("    lbacDisableDuplicateLocationPropertyRow();")
-		        .append("  } else {")
-		        .append("    window.addEventListener('load', lbacDisableDuplicateLocationPropertyRow);")
-		        .append("  }")
-		        .append("  // Belt and braces: the 'load' listener above has been observed to not fire in")
-		        .append("  // at least one real browser (form still submitted the stale duplicate despite")
-		        .append("  // disabling working correctly when invoked manually from the console). Hooking")
-		        .append("  // the form's submit event guarantees this runs right before the data that")
-		        .append("  // actually matters is sent, regardless of whether 'load' ever fires.")
-		        .append("  var thisForm = document.getElementById('thisUserForm');")
-		        .append("  if (thisForm) {")
-		        .append("    thisForm.addEventListener('submit', lbacDisableDuplicateLocationPropertyRow);")
-		        .append("  }")
-		        .append("})();").append("</script>");
+		// NOTE: every line below ends with an explicit "\n". Without it, this whole script would
+		// collapse onto a single line in the rendered page, and each "//" comment - having no line
+		// break to stop at - would swallow every line after it (including the closing "})();"),
+		// producing a syntax error that silently kills the entire script (this happened before).
+		String script = "(function() {\n"
+		        + "  function lbacUpdateLocationValue() {\n"
+		        + "    var checked = [];\n"
+		        + "    var boxes = document.getElementsByClassName('lbacLocationCheckbox');\n"
+		        + "    for (var i = 0; i < boxes.length; i++) { if (boxes[i].checked) { checked.push(boxes[i].value); } }\n"
+		        + "    document.getElementById('lbacLocationValue').value = checked.join(',');\n"
+		        + "  }\n"
+		        + "  var boxes = document.getElementsByClassName('lbacLocationCheckbox');\n"
+		        + "  for (var i = 0; i < boxes.length; i++) { boxes[i].onchange = lbacUpdateLocationValue; }\n"
+		        + "  function lbacDisableDuplicateLocationPropertyRow() {\n"
+		        + "    // Once this user has a locationUuid property, legacyui's own generic\n"
+		        + "    // \"User Properties\" editor (further down this same form, in the collapsed\n"
+		        + "    // Advanced Options section) renders ANOTHER property/value row for it - a\n"
+		        + "    // stale plain-text box that isn't wired to these checkboxes at all. Disabled\n"
+		        + "    // inputs are excluded from form submission, so disabling that row's inputs\n"
+		        + "    // (everywhere except our own, identified by id) prevents it from silently\n"
+		        + "    // overwriting whatever these checkboxes submit - UserFormController applies\n"
+		        + "    // every submitted property/value pair in order, so a stale duplicate would\n"
+		        + "    // otherwise win just by being rendered later in the page.\n"
+		        + "    var propertyInputs = document.getElementsByName('property');\n"
+		        + "    for (var i = 0; i < propertyInputs.length; i++) {\n"
+		        + "      var input = propertyInputs[i];\n"
+		        + "      if (input.id !== 'lbacLocationPropertyName' && input.value === '"
+		        + LocationBasedAccessConstants.LOCATION_USER_PROPERTY_NAME + "') {\n"
+		        + "        input.disabled = true;\n"
+		        + "        var row = input.closest ? input.closest('tr') : null;\n"
+		        + "        if (row) {\n"
+		        + "          var valueInput = row.querySelector('input[name=\"value\"], textarea[name=\"value\"]');\n"
+		        + "          if (valueInput) { valueInput.disabled = true; }\n"
+		        + "        }\n"
+		        + "      }\n"
+		        + "    }\n"
+		        + "  }\n"
+		        + "  if (document.readyState === 'complete') {\n"
+		        + "    lbacDisableDuplicateLocationPropertyRow();\n"
+		        + "  } else {\n"
+		        + "    window.addEventListener('load', lbacDisableDuplicateLocationPropertyRow);\n"
+		        + "  }\n"
+		        + "  // Belt and braces: the 'load' listener above has been observed to not fire in\n"
+		        + "  // at least one real browser (form still submitted the stale duplicate despite\n"
+		        + "  // disabling working correctly when invoked manually from the console). Hooking\n"
+		        + "  // the form's submit event guarantees this runs right before the data that\n"
+		        + "  // actually matters is sent, regardless of whether 'load' ever fires.\n"
+		        + "  var thisForm = document.getElementById('thisUserForm');\n"
+		        + "  if (thisForm) {\n"
+		        + "    thisForm.addEventListener('submit', lbacDisableDuplicateLocationPropertyRow);\n"
+		        + "  }\n"
+		        + "})();\n";
+		html.append("<script type=\"text/javascript\">").append(script).append("</script>");
 
 		html.append("</td>");
 		return html.toString();
