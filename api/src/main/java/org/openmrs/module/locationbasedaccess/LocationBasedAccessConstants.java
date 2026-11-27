@@ -29,4 +29,8 @@ public class LocationBasedAccessConstants {
     public static final String ENCOUNTER_RESTRICTION_GLOBAL_PROPERTY_NAME = "locationbasedaccess.access.encounter";
     public static final String LOCATION_BASED_RESTRICTION_VALUE_TRUE = "true";
 
+    /** "false" lets visits be ended from any session location; anything else enforces the same-location rule. */
+    public static final String VISIT_END_RESTRICTION_GLOBAL_PROPERTY_NAME = "locationbasedaccess.access.visitEnd";
+    public static final String END_VISITS_AT_ANY_LOCATION_PRIVILEGE = "End Visits At Any Location";
+
 }
