@@ -42,6 +42,20 @@
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.LocationBasedAccessActivator</activator>
 	
 	
+	<privilege>
+		<name>End Visits At Any Location</name>
+		<description>Able to end a visit that was started at a location other than the current session location</description>
+	</privilege>
+
+	<globalProperty>
+		<property>locationbasedaccess.access.visitEnd</property>
+		<defaultValue>true</defaultValue>
+		<description>
+			When true, a visit can only be ended from a session logged in at the visit's location (super users,
+			daemon tasks and holders of "End Visits At Any Location" are exempt). Set to false to turn the rule off.
+		</description>
+	</globalProperty>
+
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
 				
